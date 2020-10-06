@@ -5,11 +5,34 @@
 
 trigger:
 - master
+- AzureDevOpsPipeline
+
+variables:
+  solution.name: 'Solution/HelloPCF'
 
 pool:
   vmImage: 'windows-latest'
 
 steps:
+- task: Npm@1
+  inputs:
+    command: 'install'
+
+- task: Npm@1
+  inputs:
+    command: 'ci'
+
+- task: Npm@1
+  inputs:
+    command: 'custom'
+    customCommand: 'run build --if-present'
+
+- task: MSBuild@1
+  inputs:
+    solution: '$(solution.name)'
+    msbuildArguments: '/restore /t:rebuild'
+
+
 - script: echo Hello, world!
   displayName: 'Run a one-line script'
 
