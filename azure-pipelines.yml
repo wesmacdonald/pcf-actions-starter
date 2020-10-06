@@ -8,10 +8,11 @@ trigger:
 - AzureDevOpsPipeline
 
 variables:
-  Solution.Name: 'Solution/HelloPCF'
+  Solution.Path: 'Solution/HelloPCF'
   Version.Revision: $[counter(format('{0:yyyyMMdd}', pipeline.startTime), 0)]
   Version.Major: 1
   Version.Minor: 0
+  Solution.Version: '0.0.0.0'
 
 
 name: '$(Build.DefinitionName) $(Version.Major).$(Version.Minor).$(Date:yy)$(DayOfYear).$(Version.Revision)'
@@ -20,8 +21,20 @@ pool:
   vmImage: 'windows-latest'
 
 steps:
+- script: |
+          $VersionRegex = "\d+\.\d+\.\d+\.\d+"
+          $VersionData = [regex]::matches($Env:BUILD_BUILDNUMBER,$VersionRegex)
+          Write-Host "##vso[task.setvariable variable=Solution.Version;]$VersionData"
+  displayName: 'Get Version String'
+
+- task: MSCRMSetVersion@12
+  inputs:
+    target: 'xml'
+    unpackedFilesFolder: '$(Solution.Path)'
+    versionNumber: '$(Solution.Version)'
 - task: Npm@1
   displayName: 'npm install'
+  enabled: false
   inputs:
     command: 'install'
 
@@ -39,14 +52,14 @@ steps:
 - task: MSBuild@1
   displayName: 'Run MSBuild'
   inputs:
-    solution: '$(solution.name)'
+    solution: '$(Solution.Path)'
     configuration: 'Release'
     msbuildArguments: '/restore /t:rebuild'
 
 - task: CopyFiles@2
   displayName: 'Copy managed and unmanaged files'
   inputs:
-    SourceFolder: '$(Build.SourcesDirectory)\$(Solution.Name)\bin\Release'
+    SourceFolder: '$(Build.SourcesDirectory)\$(Solution.Path)\bin\Release'
     Contents: '**'
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
@@ -56,10 +69,3 @@ steps:
     artifact: 'PCF Solutions'
     publishLocation: 'pipeline'
 
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
