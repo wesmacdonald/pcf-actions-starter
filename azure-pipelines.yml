@@ -21,7 +21,7 @@ pool:
   vmImage: 'windows-latest'
 
 steps:
-- script: |
+- powershell: |
           $VersionRegex = "\d+\.\d+\.\d+\.\d+"
           $VersionData = [regex]::matches($Env:BUILD_BUILDNUMBER,$VersionRegex)
           Write-Host "##vso[task.setvariable variable=Solution.Version;]$VersionData"
