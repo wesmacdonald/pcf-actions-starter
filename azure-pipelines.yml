@@ -21,21 +21,26 @@ pool:
 
 steps:
 - task: Npm@1
+  displayName: 'npm install'
   inputs:
     command: 'install'
 
 - task: Npm@1
+  displayName: 'npm ci'
   inputs:
     command: 'ci'
 
 - task: Npm@1
+  displayName: 'npm run build'
   inputs:
     command: 'custom'
     customCommand: 'run build --if-present'
 
 - task: MSBuild@1
+  displayName: 'Run MSBuild'
   inputs:
     solution: '$(solution.name)'
+    configuration: 'Release'
     msbuildArguments: '/restore /t:rebuild'
 
 
