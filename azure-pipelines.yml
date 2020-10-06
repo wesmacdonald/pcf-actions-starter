@@ -28,12 +28,14 @@ steps:
   displayName: 'Get Version String'
 
 - task: MSCRMToolInstaller@12
+  displayName: 'Power DevOps Tool Installer'
   inputs:
     nugetFeed: 'official'
     psFeed: 'official'
     coreToolsVersion: 'latest'
     crmConnectorVersion: 'latest'
 - task: MSCRMSetVersion@12
+  displayName: 'Set Version of PCF'
   inputs:
     target: 'xml'
     unpackedFilesFolder: '$(Solution.Path)'
