@@ -27,6 +27,12 @@ steps:
           Write-Host "##vso[task.setvariable variable=Solution.Version;]$VersionData"
   displayName: 'Get Version String'
 
+- task: MSCRMToolInstaller@12
+  inputs:
+    nugetFeed: 'official'
+    psFeed: 'official'
+    coreToolsVersion: 'latest'
+    crmConnectorVersion: 'latest'
 - task: MSCRMSetVersion@12
   inputs:
     target: 'xml'
