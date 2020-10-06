@@ -43,6 +43,18 @@ steps:
     configuration: 'Release'
     msbuildArguments: '/restore /t:rebuild'
 
+- task: CopyFiles@2
+  displayName: 'Copy managed and unmanaged files'
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)\$(Solution.Name)\bin\Release'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)'
+    artifact: 'PCF Solutions'
+    publishLocation: 'pipeline'
 
 - script: echo Hello, world!
   displayName: 'Run a one-line script'
