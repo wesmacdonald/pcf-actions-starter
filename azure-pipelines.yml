@@ -9,6 +9,7 @@ trigger:
 
 variables:
   Solution.Name: 'Solution/HelloPCF'
+  Version.Revision: $[counter(format('{0:yyyyMMdd}', pipeline.startTime), 0)]
   Version.Major: 1
   Version.Minor: 0
 
