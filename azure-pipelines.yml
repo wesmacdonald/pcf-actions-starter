@@ -57,6 +57,7 @@ steps:
     command: 'custom'
     customCommand: 'run build --if-present'
 
+# build managed solution
 - task: MSBuild@1
   displayName: 'Run MSBuild'
   inputs:
@@ -64,13 +65,27 @@ steps:
     configuration: 'Release'
     msbuildArguments: '/restore /t:rebuild'
 
+# build unmanaged solution
+- task: MSBuild@1
+  displayName: 'Run MSBuild'
+  inputs:
+    solution: '$(Solution.Path)'
+    configuration: 'Debug'
+    msbuildArguments: '/restore /t:rebuild'
+
 - task: CopyFiles@2
-  displayName: 'Copy managed and unmanaged files'
+  displayName: 'Copy managed files'
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)\$(Solution.Path)\bin\Release'
-    Contents: '**'
+    Contents: '*_managed.zip'
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
+- task: CopyFiles@2
+  displayName: 'Copy unmanaged files'
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)\$(Solution.Path)\bin\Debug'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
 - task: PublishPipelineArtifact@1
   inputs:
     targetPath: '$(Build.ArtifactStagingDirectory)'
