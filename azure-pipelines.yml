@@ -69,27 +69,14 @@ steps:
     configuration: 'Release'
     msbuildArguments: '/t:build /restore'
 
-# build unmanaged solution
-- task: MSBuild@1
-  displayName: 'Run MSBuild'
-  inputs:
-    solution: '$(Solution.Path)'
-    configuration: 'Debug'
-    msbuildArguments: '/t:build'
 
 - task: CopyFiles@2
-  displayName: 'Copy managed files'
+  displayName: 'Copy managed and unmanaged files'
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)\$(Solution.Path)\bin\Release'
-    Contents: '*_managed.zip'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
-
-- task: CopyFiles@2
-  displayName: 'Copy unmanaged files'
-  inputs:
-    SourceFolder: '$(Build.SourcesDirectory)\$(Solution.Path)\bin\Debug'
     Contents: '*.zip'
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
 - task: PublishPipelineArtifact@1
   inputs:
     targetPath: '$(Build.ArtifactStagingDirectory)'
